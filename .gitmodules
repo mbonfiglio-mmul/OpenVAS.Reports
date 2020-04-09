@@ -1,0 +1,3 @@
+[submodule "openvasreporting"]
+	path = openvasreporting
+	url = git@github.com:mbonfiglio-mmul/openvasreporting.git
