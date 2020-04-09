@@ -6,6 +6,7 @@
 # Ignored dirs
 /XML/*
 /REPORTS/*
+/virtualenv/*
 
 ## Whitelist
 # Do not ignore folder placeholder
