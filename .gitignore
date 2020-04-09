@@ -1,0 +1,14 @@
+# VIM
+**.swp
+**.swo
+**~
+
+# Ignored dirs
+/XML/*
+/REPORTS/*
+
+## Whitelist
+# Do not ignore folder placeholder
+!.gitignore
+!**/.folder_placeholder
+
