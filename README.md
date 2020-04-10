@@ -1,90 +1,105 @@
-Impostazione e script helper per usare openvasreporting nel creare report di OpenVAS.
+Settings and scripts helper to user (a fork of) openvasreporting fo generating OpenVAS reports.
 
 ---
 
-# Installazione
-Scarico gli strumenti
+# Prerequisites
+
+Needed on system:
+- git
+- python3
+
+Optional, but raccomended:
+- python3 virtualenv
+
+Needed only for perl utility:
+- perl
+- libXML module
+
+
+# Installation
 
 ```
-git clone git@github.com:mbonfiglio-mmul/OpenVAS.Reports.git
-cd OpenVAS.Reports
-git submodule init
-git submodule update
+$ git clone git@github.com:mmul-it/openvas.git
+$ cd openvas/reports
+$ git submodule init
+$ git submodule update
 ```
 
-Creo ambiente virtuale python3
+If installed, initialize virtualenv...
 
 ```
-virtualenv3 virtualenv/
+$ virtualenv3 virtualenv/
 ```
 
-Attivo ambiente virtuale
+... and activate it
 
 ```
-source virtualenv/bin/activate
+$ source virtualenv/bin/activate
 ```
 
-Aggiorno PIP (si sa mai... :-)
+Update PIP (just to be sure)
 
 ```
-pip install -U pip
+$ pip install -U pip
 ```
 
-Installo openvasreport nell'ambiente virtuale (attenzione allo slash finale, è importante)
+Install opevasreporting from local dir with all dependencies
+(the final `/` is meaningful)
 
 ```
 pip install -r openvasreporting/
 ```
 
-E' compresa un'utili perl per la manipolazione degli XML; usa XML::LibXML, che deve essere quindi
-presente nel sistema.
-
 ---
 
-# Uso
-I report che vogliamo usare saranno depositati in XML.
-In caso di mancanza di hostname rilevati (per reverese DNS errato, per esempio),
-lo script `utils/search_and_add_hostname.plx` può essere usato per inserirli.
-A fronte di un file CSV
+# Use
+The report must be pulled from OpenVAS/GreenBone in xml.
+They can be put in `input_xml` to be analyzed.
+
+If hostnames are missing (no reverse DNS, for example), and you want
+to add them, the perl utility script is there for you.
+Prepare a CSV with IP and relative hostname:
 
 ```
-IP_1,"nome host1"
-IP_2,"nome host2"
+IP_1,"hostname_1"
+IP_2,"hostname_2"
 [...]
 ```
 
-Lo script
-- carica IP e relativi hostname in memoria
-- agli hostname prepone un asterisco, per distinguere quelli inseriti da quelli rilevati
-- legge dallo standard input il file XML originale di OpenVAS (e lo carica in memoria)
-- cerca i campi hostname vuoti
-- cerca l'IP tra quelli caricati in memoria
-- riempie il campo
-- se mancante, aggiunge il dettaglio dell'hostname a quelli legati all'host
-- scrive il risultato nello standar output (pretty-printed)
+The script will:
+- load IP and hostname in memory;
+- put a `* ` before the hostname (so you'll know wich hostname were found and which weren't)
+- read from stdinput the OpenVAS XML, validate and keep in memory
+- look for empty hostname fields
+- search the IP for hostname; if found, fill the field
+- if missing, adds this host detail
+- write to stadndard output (pretty-printed)
 
-Quindi, preparato il file di IP e Host (`XML/hosts.list.csv`), per ogni XML prodotto da 
-OpenVAS (`~/Downloads/report-7ca3c334-f40c-431c-9fa6-e44f4083bd66.xml`) è possibile produrne uno 
-con l'aggiunta degli hostname (`XML/Day.xml`) sfruttando le redirezioni con il seguente comando :
-
-```
-utils/search_and_add_hostname.plx XML/hosts.list.csv <~/Download/report-7ca3c334-f40c-431c-9fa6-e44f4083bd66.xml >XML/Day.xml
-```
-
-I messaggi di controllo sono inviati all standard error:
+Example:
+With IP-hostname file `hosts.list.csv`, fill empty hosntame fields of 
+OpenVAS `report-7ca3c334-f40c-431c-9fa6-e44f4083bd66.xml` and save the
+result in `XML/report.xml` (with redirections):
 
 ```
-Reading "XML/hosts.list.csv"...
+utils/search_and_add_hostname.plx hosts.list.csv <report-7ca3c334-f40c-431c-9fa6-e44f4083bd66.xml >XML/report.xml
+```
+
+Control message are wrote to standard error
+
+```
+Reading "hosts.list.csv"...
 Found 67 hosts.
 Reading stdin into memory...
 Read 7922 lines.
 Done. Have a good day!
 ```
-Una volta preparati tutti gli XML nella cartella, basta lanciare lo script `make_report.sh`
-per generare un report di ogni tipo disponibile (csv, xlsx, docx) dagli XML.
 
-In alternativa, piazzarsi nella cartella `opevasreporting` e invocare il modulo
-python direttamente
+To generate the reports from XML files, just launch `reports.sh` script.
+This will generate a **single report** of each format `openvasreporting` can (csv, xlsx, docx)
+from **all** the xml in `input_xml`.
+
+If you need more control, launch the tool itself: from his directory `opevasreporting`
+with python
 
 ```
 > python -m openvasreporting --help
@@ -105,4 +120,3 @@ optional arguments:
   -t TEMPLATE, --template TEMPLATE
                         Template file for docx export
 ```
-

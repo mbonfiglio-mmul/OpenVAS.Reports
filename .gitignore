@@ -4,8 +4,8 @@
 **~
 
 # Ignored dirs
-/XML/*
-/REPORTS/*
+/input_xml/*
+/output_reports/*
 /virtualenv/*
 
 ## Whitelist

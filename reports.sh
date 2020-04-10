@@ -5,13 +5,13 @@
 
 # Register local path, to make XML and REPORTS relative to this
 current_dir="$( readlink -e "$( dirname "${0}" )" )"
-xml_dir="${current_dir}/XML"
-reports_dir="${current_dir}/REPORTS"
+xml_dir="${current_dir}/input_xml"
+reports_dir="${current_dir}/output_reports"
 openvasreporting_dir="${current_dir}/openvasreporting"
 virtualenv_dir="${current_dir}/virtualenv"
 
-# First: if not in virtualenv, activate it
-if ! env | grep -q VIRTUAL_ENV
+# First: if not in virtualenv, but aviable, activate it
+if ! env | grep -q VIRTUAL_ENV && [[ -f "${virtualenv_dir}/bin/activate" ]]
 then
 # shellcheck source=virtualenv/bin/activate
 	source "${virtualenv_dir}/bin/activate"
